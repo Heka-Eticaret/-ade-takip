@@ -43,11 +43,11 @@ export default function HomePage() {
   useEffect(() => {
     let mounted = true;
 
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(({ data }: { data: { session: Session | null } }) => {
       if (mounted) void loadProfile(data.session);
     });
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((_event: string, nextSession: Session | null) => {
       if (mounted) void loadProfile(nextSession);
     });
 
