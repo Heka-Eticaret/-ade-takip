@@ -1,6 +1,12 @@
 "use client";
 
-import { createClient } from "@supabase/supabase-js";
+import {
+  createClient,
+  type AuthChangeEvent,
+  type RealtimeChannel,
+  type Session,
+  type SupabaseClient,
+} from "@supabase/supabase-js";
 
 let supabaseInstance: ReturnType<typeof createClient> | null = null;
 let supabaseInitError: Error | null = null;
@@ -53,7 +59,7 @@ export const supabase = {
       }
       return client.auth.getSession();
     },
-    onAuthStateChange: (callback: any) => {
+    onAuthStateChange: (callback: (event: AuthChangeEvent, session: Session | null) => void) => {
       const client = getSupabaseClient();
       if (!client) {
         return { data: { subscription: { unsubscribe: () => {} } } };
@@ -85,7 +91,7 @@ export const supabase = {
         delete: () => ({
           eq: () => Promise.resolve({ error: new Error("Supabase not initialized") }),
         }),
-      } as any;
+      } as unknown as ReturnType<SupabaseClient["channel"]>;
     }
     return client.from(table);
   },
@@ -95,15 +101,15 @@ export const supabase = {
       return {
         on: () => ({ subscribe: () => {} }),
         subscribe: () => {},
-      } as any;
+      } as unknown as ReturnType<SupabaseClient["channel"]>;
     }
     return client.channel(name);
   },
-  removeChannel: async (channel: any) => {
+  removeChannel: async (channel: RealtimeChannel) => {
     const client = getSupabaseClient();
     if (!client) {
       return;
     }
     return client.removeChannel(channel);
   },
-} as any;
+} as unknown as SupabaseClient;

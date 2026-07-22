@@ -43,14 +43,33 @@ create table if not exists public.returns (
   created_by uuid not null references public.profiles(id),
   received_by uuid references public.profiles(id),
   checked_by uuid references public.profiles(id),
+  logo_entered_by uuid references public.profiles(id),
   received_at timestamptz,
   checked_at timestamptz,
+  logo_entered boolean not null default false,
+  logo_entered_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint decision_requires_arrival check (
     decision_status = 'bekliyor' or arrival_status = 'geldi'
+  ),
+  constraint logo_entry_requires_approval check (
+    not logo_entered or decision_status = 'onay'
   )
 );
+
+-- Zaten kurulu veritabanlarında eksik olan Logo giriş alanlarını ekler.
+alter table public.returns add column if not exists logo_entered boolean not null default false;
+alter table public.returns add column if not exists logo_entered_by uuid references public.profiles(id);
+alter table public.returns add column if not exists logo_entered_at timestamptz;
+
+do $$
+begin
+  alter table public.returns add constraint logo_entry_requires_approval
+    check (not logo_entered or decision_status = 'onay');
+exception
+  when duplicate_object then null;
+end $$;
 
 create table if not exists public.return_logs (
   id bigint generated always as identity primary key,
@@ -139,6 +158,8 @@ begin
   new.received_at := old.received_at;
   new.checked_by := old.checked_by;
   new.checked_at := old.checked_at;
+  new.logo_entered_by := old.logo_entered_by;
+  new.logo_entered_at := old.logo_entered_at;
 
   if new.arrival_status is distinct from old.arrival_status then
     if new.arrival_status = 'geldi' then
@@ -150,6 +171,9 @@ begin
       new.decision_status := 'bekliyor';
       new.checked_by := null;
       new.checked_at := null;
+      new.logo_entered := false;
+      new.logo_entered_by := null;
+      new.logo_entered_at := null;
     end if;
   end if;
 
@@ -164,6 +188,26 @@ begin
     else
       new.checked_by := actor_id;
       new.checked_at := now();
+    end if;
+
+    if new.decision_status <> 'onay' then
+      new.logo_entered := false;
+      new.logo_entered_by := null;
+      new.logo_entered_at := null;
+    end if;
+  end if;
+
+  if new.logo_entered is distinct from old.logo_entered then
+    if new.logo_entered and new.decision_status <> 'onay' then
+      raise exception 'Logo girişi işaretlemeden önce iade onaylanmış olmalıdır.';
+    end if;
+
+    if new.logo_entered then
+      new.logo_entered_by := actor_id;
+      new.logo_entered_at := now();
+    else
+      new.logo_entered_by := null;
+      new.logo_entered_at := null;
     end if;
   end if;
 
@@ -214,6 +258,11 @@ begin
       old.decision_status::text,
       new.decision_status::text
     );
+  elsif new.logo_entered is distinct from old.logo_entered then
+    action_text := case
+      when new.logo_entered then 'Logo''ya giriş yapıldı'
+      else 'Logo girişi yapılmadı olarak işaretlendi'
+    end;
   elsif new.notes is distinct from old.notes then
     action_text := 'İade notu güncellendi';
   elsif new.customer_name is distinct from old.customer_name

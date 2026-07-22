@@ -56,20 +56,34 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
   const loadReturns = useCallback(async () => {
     const { data, error: loadError } = await supabase
       .from("returns")
-      .select(
-        `
-          *,
-          creator:profiles!returns_created_by_fkey(id, full_name, username),
-          receiver:profiles!returns_received_by_fkey(id, full_name, username),
-          checker:profiles!returns_checked_by_fkey(id, full_name, username)
-        `,
-      )
+      .select("*")
       .order("created_at", { ascending: false });
 
     if (loadError) {
       setError("İadeler yüklenemedi: " + loadError.message);
     } else {
-      setReturns((data || []) as unknown as ReturnRecord[]);
+      const returnRows = (data || []) as Array<ReturnRecord & { created_by: string; received_by: string | null; checked_by: string | null; logo_entered_by: string | null }>;
+      const profileIds = [...new Set(
+        returnRows.flatMap((item) => [item.created_by, item.received_by, item.checked_by, item.logo_entered_by].filter(Boolean)),
+      )];
+      const { data: profiles, error: profilesError } = profileIds.length
+        ? await supabase.from("profiles").select("id, full_name, username").in("id", profileIds)
+        : { data: [], error: null };
+
+      if (profilesError) {
+        setError("Kullanıcı bilgileri yüklenemedi: " + profilesError.message);
+      }
+
+      const profileMap = new Map(
+        ((profiles || []) as Array<Pick<Profile, "id" | "full_name" | "username">>).map((profile) => [profile.id, profile]),
+      );
+      setReturns(returnRows.map((item) => ({
+        ...item,
+        creator: profileMap.get(item.created_by) || null,
+        receiver: item.received_by ? profileMap.get(item.received_by) || null : null,
+        checker: item.checked_by ? profileMap.get(item.checked_by) || null : null,
+        logoEnterer: item.logo_entered_by ? profileMap.get(item.logo_entered_by) || null : null,
+      })) as ReturnRecord[]);
     }
     setLoading(false);
   }, []);
@@ -121,6 +135,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
       arrived: returns.filter((item) => item.arrival_status === "geldi").length,
       approved: returns.filter((item) => item.decision_status === "onay").length,
       rejected: returns.filter((item) => item.decision_status === "red").length,
+      logoPending: returns.filter((item) => item.decision_status === "onay" && !item.logo_entered).length,
     }),
     [returns],
   );
@@ -153,6 +168,20 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
           ? "İade onaylandı ve Onaylananlar görünümüne taşındı."
           : `Kontrol sonucu “${decisionLabels[status]}” olarak güncellendi.`,
       );
+      await loadReturns();
+    }
+  }
+
+  async function updateLogoEntered(id: string, entered: boolean) {
+    setError("");
+    const { error: updateError } = await supabase
+      .from("returns")
+      .update({ logo_entered: entered })
+      .eq("id", id);
+
+    if (updateError) setError("Logo girişi güncellenemedi: " + updateError.message);
+    else {
+      setMessage(entered ? "Logo'ya giriş yapıldı olarak işaretlendi." : "Logo girişi yapılmadı olarak işaretlendi.");
       await loadReturns();
     }
   }
@@ -197,12 +226,29 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
     setHistoryLoading(true);
     const { data, error: historyError } = await supabase
       .from("return_logs")
-      .select("id, return_id, action, created_at, changer:profiles!return_logs_changed_by_fkey(id, full_name, username)")
+      .select("id, return_id, action, created_at, changed_by")
       .eq("return_id", returnId)
       .order("created_at", { ascending: false });
 
-    if (historyError) setError("İşlem geçmişi yüklenemedi: " + historyError.message);
-    setHistory((data || []) as unknown as ReturnLog[]);
+    if (historyError) {
+      setError("İşlem geçmişi yüklenemedi: " + historyError.message);
+      setHistory([]);
+      setHistoryLoading(false);
+      return;
+    }
+
+    const logRows = (data || []) as ReturnLog[];
+    const profileIds = [...new Set(logRows.map((log) => log.changed_by).filter(Boolean))];
+    const { data: profiles } = profileIds.length
+      ? await supabase.from("profiles").select("id, full_name, username").in("id", profileIds)
+      : { data: [] };
+    const profileMap = new Map(
+      ((profiles || []) as Array<Pick<Profile, "id" | "full_name" | "username">>).map((profile) => [profile.id, profile]),
+    );
+    setHistory(logRows.map((log) => ({
+      ...log,
+      changer: log.changed_by ? profileMap.get(log.changed_by) || null : null,
+    })));
     setHistoryLoading(false);
   }
 
@@ -217,6 +263,8 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         "İadeyi Giren",
         "Teslim Alan",
         "Kontrol Eden",
+        "Logo Girişi",
+        "Logo'ya Giren",
         "Not",
         "Kayıt Tarihi",
       ],
@@ -229,6 +277,8 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         item.creator?.full_name || item.creator?.username || "",
         item.receiver?.full_name || item.receiver?.username || "",
         item.checker?.full_name || item.checker?.username || "",
+        item.logo_entered ? "Yapıldı" : "Yapılmadı",
+        item.logoEnterer?.full_name || item.logoEnterer?.username || "",
         item.notes || "",
         formatDate(item.created_at),
       ]),
@@ -268,6 +318,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         <StatCard label="Teslim Geldi" value={stats.arrived} />
         <StatCard label="Onaylandı" value={stats.approved} />
         <StatCard label="Reddedildi" value={stats.rejected} />
+        <StatCard label="Logo Girişi Bekleyen" value={stats.logoPending} />
       </section>
 
       <section className="toolbar panel">
@@ -352,6 +403,11 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                   <div className="status-row">
                     <span className={`status arrival-${item.arrival_status}`}>{arrivalLabels[item.arrival_status]}</span>
                     <span className={`status decision-${item.decision_status}`}>{decisionLabels[item.decision_status]}</span>
+                    {item.decision_status === "onay" && (
+                      <span className={`status ${item.logo_entered ? "decision-onay" : "decision-bekliyor"}`}>
+                        {item.logo_entered ? "Logo'ya Girildi" : "Logo Girişi Bekliyor"}
+                      </span>
+                    )}
                   </div>
 
                   <dl className="meta-grid">
@@ -370,6 +426,24 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                     <div>
                       <dt>Kayıt tarihi</dt>
                       <dd>{formatDate(item.created_at)}</dd>
+                    </div>
+                    <div>
+                      <dt>Logo kaydı</dt>
+                      <dd className={item.decision_status === "onay" ? "logo-meta-value" : "logo-meta-value muted-value"}>
+                        {item.decision_status === "onay"
+                          ? item.logo_entered
+                            ? "Yapıldı"
+                            : "Yapılmadı"
+                          : "Onay sonrası aktif"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Logo&apos;ya giren / tarih</dt>
+                      <dd>
+                        {item.decision_status === "onay" && item.logo_entered
+                          ? `${item.logoEnterer?.full_name || item.logoEnterer?.username || "Sistem"} · ${formatDate(item.logo_entered_at)}`
+                          : "—"}
+                      </dd>
                     </div>
                   </dl>
 
@@ -441,6 +515,27 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                       )}
                     </div>
                     {item.arrival_status !== "geldi" && <small>Kontrol kararı için önce “Geldi” seçilmelidir.</small>}
+                  </div>
+
+                  <div className="action-group">
+                    <span className="action-label">3. Logo girişi</span>
+                    <div className="segmented logo-segmented">
+                      <button
+                        className={!item.logo_entered ? "active" : ""}
+                        disabled={item.decision_status !== "onay"}
+                        onClick={() => void updateLogoEntered(item.id, false)}
+                      >
+                        Yapılmadı
+                      </button>
+                      <button
+                        className={item.logo_entered ? "active" : ""}
+                        disabled={item.decision_status !== "onay"}
+                        onClick={() => void updateLogoEntered(item.id, true)}
+                      >
+                        Yapıldı
+                      </button>
+                    </div>
+                    {item.decision_status !== "onay" && <small>Logo girişi için önce iade onaylanmalıdır.</small>}
                   </div>
 
                   <div className="card-footer-actions">

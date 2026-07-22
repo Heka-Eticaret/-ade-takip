@@ -317,7 +317,7 @@ p {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 12px;
   margin-bottom: 16px;
 }
@@ -545,6 +545,15 @@ p {
   white-space: nowrap;
 }
 
+.logo-meta-value {
+  color: var(--success) !important;
+}
+
+.logo-meta-value.muted-value {
+  color: var(--muted) !important;
+  font-weight: 550;
+}
+
 .note-box {
   display: flex;
   align-items: flex-start;
@@ -659,6 +668,10 @@ p {
 .segmented button.active {
   color: #fff;
   background: #344054;
+}
+
+.logo-segmented {
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .card-footer-actions {

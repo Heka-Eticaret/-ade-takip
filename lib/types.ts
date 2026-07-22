@@ -20,13 +20,17 @@ export interface ReturnRecord {
   created_by: string;
   received_by: string | null;
   checked_by: string | null;
+  logo_entered: boolean;
+  logo_entered_by: string | null;
   received_at: string | null;
   checked_at: string | null;
+  logo_entered_at: string | null;
   created_at: string;
   updated_at: string;
   creator: Pick<Profile, "id" | "full_name" | "username"> | null;
   receiver: Pick<Profile, "id" | "full_name" | "username"> | null;
   checker: Pick<Profile, "id" | "full_name" | "username"> | null;
+  logoEnterer: Pick<Profile, "id" | "full_name" | "username"> | null;
 }
 
 export interface ReturnLog {
@@ -34,5 +38,6 @@ export interface ReturnLog {
   return_id: string;
   action: string;
   created_at: string;
+  changed_by: string | null;
   changer: Pick<Profile, "id" | "full_name" | "username"> | null;
 }
