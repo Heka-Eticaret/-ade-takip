@@ -45,7 +45,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [arrivalFilter, setArrivalFilter] = useState<ArrivalStatus | "tumu">("tumu");
-  const [decisionFilter, setDecisionFilter] = useState<DecisionStatus | "tumu">("tumu");
+  const [decisionFilter, setDecisionFilter] = useState<DecisionStatus | "tumu">("bekliyor");
   const [showForm, setShowForm] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [noteDraft, setNoteDraft] = useState("");
@@ -148,7 +148,11 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
 
     if (updateError) setError("Kontrol sonucu güncellenemedi: " + updateError.message);
     else {
-      setMessage(`Kontrol sonucu “${decisionLabels[status]}” olarak güncellendi.`);
+      setMessage(
+        status === "onay"
+          ? "İade onaylandı ve Onaylananlar görünümüne taşındı."
+          : `Kontrol sonucu “${decisionLabels[status]}” olarak güncellendi.`,
+      );
       await loadReturns();
     }
   }
@@ -282,10 +286,10 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
             <option value="gelmedi">Gelmedi</option>
           </select>
           <select value={decisionFilter} onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}>
+            <option value="bekliyor">Kontrol bekleyenler</option>
+            <option value="onay">Onaylananlar</option>
+            <option value="red">Reddedilenler</option>
             <option value="tumu">Tüm kontrol sonuçları</option>
-            <option value="bekliyor">Kontrol bekliyor</option>
-            <option value="onay">Onaylandı</option>
-            <option value="red">Reddedildi</option>
           </select>
         </div>
         <div className="toolbar-actions">
@@ -313,7 +317,15 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
 
       <section className="return-section">
         <div className="section-heading">
-          <h2>İade Kayıtları</h2>
+          <h2>
+            {decisionFilter === "bekliyor"
+              ? "Kontrol Bekleyen İadeler"
+              : decisionFilter === "onay"
+                ? "Onaylanan İadeler"
+                : decisionFilter === "red"
+                  ? "Reddedilen İadeler"
+                  : "İade Kayıtları"}
+          </h2>
           <span>{filteredReturns.length} kayıt gösteriliyor</span>
         </div>
 
