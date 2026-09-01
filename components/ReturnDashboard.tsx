@@ -483,6 +483,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                         <button
                           className={item.arrival_status === status ? "active" : ""}
                           key={status}
+                          aria-pressed={item.arrival_status === status}
                           onClick={() => void updateArrival(item.id, status)}
                         >
                           {arrivalLabels[status]}
@@ -497,6 +498,8 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                       <button
                         className={`button approve ${item.decision_status === "onay" ? "selected" : ""}`}
                         disabled={item.arrival_status !== "geldi"}
+                        aria-pressed={item.decision_status === "onay"}
+                        title={item.arrival_status !== "geldi" ? "Kontrol kararı için önce “Geldi” seçilmelidir." : undefined}
                         onClick={() => void updateDecision(item.id, "onay")}
                       >
                         Onayla
@@ -504,6 +507,8 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                       <button
                         className={`button reject ${item.decision_status === "red" ? "selected" : ""}`}
                         disabled={item.arrival_status !== "geldi"}
+                        aria-pressed={item.decision_status === "red"}
+                        title={item.arrival_status !== "geldi" ? "Kontrol kararı için önce “Geldi” seçilmelidir." : undefined}
                         onClick={() => void updateDecision(item.id, "red")}
                       >
                         Reddet
@@ -523,6 +528,8 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                       <button
                         className={!item.logo_entered ? "active" : ""}
                         disabled={item.decision_status !== "onay"}
+                        aria-pressed={!item.logo_entered}
+                        title={item.decision_status !== "onay" ? "Logo girişi için önce iade onaylanmalıdır." : undefined}
                         onClick={() => void updateLogoEntered(item.id, false)}
                       >
                         Yapılmadı
@@ -530,6 +537,8 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                       <button
                         className={item.logo_entered ? "active" : ""}
                         disabled={item.decision_status !== "onay"}
+                        aria-pressed={item.logo_entered}
+                        title={item.decision_status !== "onay" ? "Logo girişi için önce iade onaylanmalıdır." : undefined}
                         onClick={() => void updateLogoEntered(item.id, true)}
                       >
                         Yapıldı
