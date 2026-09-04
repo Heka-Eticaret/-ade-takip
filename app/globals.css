@@ -49,6 +49,13 @@ button:disabled {
   opacity: 0.52;
 }
 
+button:focus-visible,
+.text-button:focus-visible,
+.segmented button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 input,
 select,
 textarea {
@@ -76,7 +83,7 @@ input:focus,
 select:focus,
 textarea:focus {
   border-color: #84adff;
-  box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.1);
+  box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.15);
 }
 
 label {
