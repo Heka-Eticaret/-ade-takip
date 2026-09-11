@@ -49,6 +49,11 @@ button:disabled {
   opacity: 0.52;
 }
 
+button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 input,
 select,
 textarea {
@@ -367,6 +372,39 @@ p {
   display: grid;
   grid-template-columns: minmax(220px, 1.5fr) minmax(175px, 0.8fr) minmax(190px, 0.8fr);
   gap: 10px;
+}
+
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.search-wrapper input {
+  padding-right: 32px;
+}
+
+.clear-search {
+  position: absolute;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  color: var(--muted);
+  background: transparent;
+  font-size: 0.75rem;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.clear-search:hover {
+  color: var(--text);
+  background: var(--neutral-bg);
 }
 
 .search-input {
