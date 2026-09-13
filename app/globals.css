@@ -49,6 +49,12 @@ button:disabled {
   opacity: 0.52;
 }
 
+button:focus-visible,
+.text-button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 input,
 select,
 textarea {
@@ -364,9 +370,18 @@ p {
 
 .filters {
   flex: 1;
-  display: grid;
-  grid-template-columns: minmax(220px, 1.5fr) minmax(175px, 0.8fr) minmax(190px, 0.8fr);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 10px;
+}
+
+.filters .search-input {
+  flex: 1 1 220px;
+}
+
+.filters select {
+  flex: 0 1 190px;
 }
 
 .search-input {
