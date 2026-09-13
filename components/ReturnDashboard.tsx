@@ -128,6 +128,14 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
     });
   }, [returns, search, arrivalFilter, decisionFilter]);
 
+  const isFiltered = search.trim() !== "" || arrivalFilter !== "tumu" || decisionFilter !== "bekliyor";
+
+  const clearFilters = useCallback(() => {
+    setSearch("");
+    setArrivalFilter("tumu");
+    setDecisionFilter("bekliyor");
+  }, []);
+
   const stats = useMemo(
     () => ({
       total: returns.length,
@@ -342,6 +350,11 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
             <option value="red">Reddedilenler</option>
             <option value="tumu">Tüm kontrol sonuçları</option>
           </select>
+          {isFiltered && (
+            <button className="button ghost small" onClick={clearFilters} aria-label="Filtreleri Temizle">
+              Filtreleri Temizle
+            </button>
+          )}
         </div>
         <div className="toolbar-actions">
           <button className="button secondary" onClick={exportCsv}>CSV Aktar</button>
@@ -385,7 +398,16 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         ) : filteredReturns.length === 0 ? (
           <div className="empty-state">
             <strong>Kayıt bulunamadı.</strong>
-            <span>Filtreleri temizleyin veya yeni bir iade ekleyin.</span>
+            {isFiltered ? (
+              <>
+                <span>Arama veya filtrelerinize uygun sonuç bulunamadı.</span>
+                <button className="button secondary small" onClick={clearFilters} style={{ marginTop: "8px" }}>
+                  Filtreleri Temizle
+                </button>
+              </>
+            ) : (
+              <span>Yeni bir iade ekleyerek başlayabilirsiniz.</span>
+            )}
           </div>
         ) : (
           <div className="return-list">
