@@ -330,13 +330,13 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
             placeholder="Müşteri veya ürün ara…"
             aria-label="Müşteri veya ürün ara"
           />
-          <select value={arrivalFilter} onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}>
+          <select value={arrivalFilter} onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")} aria-label="Geliş durumu filtresi">
             <option value="tumu">Tüm geliş durumları</option>
             <option value="bekliyor">Bekleniyor</option>
             <option value="geldi">Geldi</option>
             <option value="gelmedi">Gelmedi</option>
           </select>
-          <select value={decisionFilter} onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}>
+          <select value={decisionFilter} onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")} aria-label="Kontrol sonucu filtresi">
             <option value="bekliyor">Kontrol bekleyenler</option>
             <option value="onay">Onaylananlar</option>
             <option value="red">Reddedilenler</option>
@@ -345,7 +345,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         </div>
         <div className="toolbar-actions">
           <button className="button secondary" onClick={exportCsv}>CSV Aktar</button>
-          <button className="button primary" onClick={() => setShowForm((value) => !value)}>
+          <button className="button primary" onClick={() => setShowForm((value) => !value)} aria-expanded={showForm}>
             {showForm ? "Formu Kapat" : "+ Yeni İade"}
           </button>
         </div>
@@ -363,8 +363,16 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         />
       )}
 
-      {message && <div className="alert success">{message}</div>}
-      {error && <div className="alert error">{error}</div>}
+      {message && (
+        <div className="alert success" role="status" aria-live="polite">
+          {message}
+        </div>
+      )}
+      {error && (
+        <div className="alert error" role="alert" aria-live="assertive">
+          {error}
+        </div>
+      )}
 
       <section className="return-section">
         <div className="section-heading">
@@ -451,7 +459,12 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                     <div>
                       <strong>Not</strong>
                       {editingNoteId === item.id ? (
-                        <textarea value={noteDraft} onChange={(event) => setNoteDraft(event.target.value)} rows={3} />
+                        <textarea
+                          value={noteDraft}
+                          onChange={(event) => setNoteDraft(event.target.value)}
+                          rows={3}
+                          aria-label="İade notu"
+                        />
                       ) : (
                         <p>{item.notes || "Not eklenmemiş."}</p>
                       )}
@@ -478,11 +491,12 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                 <aside className="return-actions">
                   <div className="action-group">
                     <span className="action-label">1. Kargo durumu</span>
-                    <div className="segmented">
+                    <div className="segmented" role="group" aria-label="Kargo durumu">
                       {(["bekliyor", "geldi", "gelmedi"] as ArrivalStatus[]).map((status) => (
                         <button
                           className={item.arrival_status === status ? "active" : ""}
                           key={status}
+                          aria-pressed={item.arrival_status === status}
                           onClick={() => void updateArrival(item.id, status)}
                         >
                           {arrivalLabels[status]}
@@ -497,6 +511,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                       <button
                         className={`button approve ${item.decision_status === "onay" ? "selected" : ""}`}
                         disabled={item.arrival_status !== "geldi"}
+                        aria-pressed={item.decision_status === "onay"}
                         onClick={() => void updateDecision(item.id, "onay")}
                       >
                         Onayla
@@ -504,6 +519,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                       <button
                         className={`button reject ${item.decision_status === "red" ? "selected" : ""}`}
                         disabled={item.arrival_status !== "geldi"}
+                        aria-pressed={item.decision_status === "red"}
                         onClick={() => void updateDecision(item.id, "red")}
                       >
                         Reddet
@@ -519,10 +535,11 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
 
                   <div className="action-group">
                     <span className="action-label">3. Logo girişi</span>
-                    <div className="segmented logo-segmented">
+                    <div className="segmented logo-segmented" role="group" aria-label="Logo girişi">
                       <button
                         className={!item.logo_entered ? "active" : ""}
                         disabled={item.decision_status !== "onay"}
+                        aria-pressed={!item.logo_entered}
                         onClick={() => void updateLogoEntered(item.id, false)}
                       >
                         Yapılmadı
@@ -530,6 +547,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                       <button
                         className={item.logo_entered ? "active" : ""}
                         disabled={item.decision_status !== "onay"}
+                        aria-pressed={item.logo_entered}
                         onClick={() => void updateLogoEntered(item.id, true)}
                       >
                         Yapıldı
@@ -539,7 +557,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                   </div>
 
                   <div className="card-footer-actions">
-                    <button className="text-button" onClick={() => void showHistory(item.id)}>İşlem geçmişi</button>
+                    <button className="text-button" onClick={() => void showHistory(item.id)} aria-expanded={historyId === item.id}>İşlem geçmişi</button>
                     {profile.role === "admin" && (
                       <button className="text-button danger" onClick={() => void deleteReturn(item.id)}>Kaydı sil</button>
                     )}
