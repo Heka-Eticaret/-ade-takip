@@ -363,8 +363,16 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         />
       )}
 
-      {message && <div className="alert success">{message}</div>}
-      {error && <div className="alert error">{error}</div>}
+      {message && (
+        <div className="alert success" role="status" aria-live="polite">
+          {message}
+        </div>
+      )}
+      {error && (
+        <div className="alert error" role="alert" aria-live="assertive">
+          {error}
+        </div>
+      )}
 
       <section className="return-section">
         <div className="section-heading">
