@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import type {
   ArrivalStatus,
@@ -44,6 +44,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [arrivalFilter, setArrivalFilter] = useState<ArrivalStatus | "tumu">("tumu");
   const [decisionFilter, setDecisionFilter] = useState<DecisionStatus | "tumu">("bekliyor");
   const [showForm, setShowForm] = useState(false);
@@ -323,13 +324,29 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
 
       <section className="toolbar panel">
         <div className="filters">
-          <input
-            className="search-input"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Müşteri veya ürün ara…"
-            aria-label="Müşteri veya ürün ara"
-          />
+          <div className="search-wrapper">
+            <input
+              ref={searchInputRef}
+              className="search-input"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Müşteri veya ürün ara…"
+              aria-label="Müşteri veya ürün ara"
+            />
+            {search && (
+              <button
+                type="button"
+                className="search-clear-button"
+                onClick={() => {
+                  setSearch("");
+                  searchInputRef.current?.focus();
+                }}
+                aria-label="Aramayı temizle"
+              >
+                ✕
+              </button>
+            )}
+          </div>
           <select value={arrivalFilter} onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}>
             <option value="tumu">Tüm geliş durumları</option>
             <option value="bekliyor">Bekleniyor</option>
