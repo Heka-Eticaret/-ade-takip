@@ -330,13 +330,21 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
             placeholder="Müşteri veya ürün ara…"
             aria-label="Müşteri veya ürün ara"
           />
-          <select value={arrivalFilter} onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}>
+          <select
+            aria-label="Geliş durumu filtresi"
+            value={arrivalFilter}
+            onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}
+          >
             <option value="tumu">Tüm geliş durumları</option>
             <option value="bekliyor">Bekleniyor</option>
             <option value="geldi">Geldi</option>
             <option value="gelmedi">Gelmedi</option>
           </select>
-          <select value={decisionFilter} onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}>
+          <select
+            aria-label="Kontrol sonucu filtresi"
+            value={decisionFilter}
+            onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}
+          >
             <option value="bekliyor">Kontrol bekleyenler</option>
             <option value="onay">Onaylananlar</option>
             <option value="red">Reddedilenler</option>
@@ -363,8 +371,8 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         />
       )}
 
-      {message && <div className="alert success">{message}</div>}
-      {error && <div className="alert error">{error}</div>}
+      {message && <div className="alert success" role="status" aria-live="polite">{message}</div>}
+      {error && <div className="alert error" role="alert">{error}</div>}
 
       <section className="return-section">
         <div className="section-heading">
@@ -482,6 +490,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                       {(["bekliyor", "geldi", "gelmedi"] as ArrivalStatus[]).map((status) => (
                         <button
                           className={item.arrival_status === status ? "active" : ""}
+                          aria-pressed={item.arrival_status === status}
                           key={status}
                           onClick={() => void updateArrival(item.id, status)}
                         >
@@ -496,6 +505,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                     <div className="decision-buttons">
                       <button
                         className={`button approve ${item.decision_status === "onay" ? "selected" : ""}`}
+                        aria-pressed={item.decision_status === "onay"}
                         disabled={item.arrival_status !== "geldi"}
                         onClick={() => void updateDecision(item.id, "onay")}
                       >
@@ -503,6 +513,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                       </button>
                       <button
                         className={`button reject ${item.decision_status === "red" ? "selected" : ""}`}
+                        aria-pressed={item.decision_status === "red"}
                         disabled={item.arrival_status !== "geldi"}
                         onClick={() => void updateDecision(item.id, "red")}
                       >
@@ -522,6 +533,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                     <div className="segmented logo-segmented">
                       <button
                         className={!item.logo_entered ? "active" : ""}
+                        aria-pressed={!item.logo_entered}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, false)}
                       >
@@ -529,6 +541,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                       </button>
                       <button
                         className={item.logo_entered ? "active" : ""}
+                        aria-pressed={item.logo_entered}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, true)}
                       >
@@ -629,17 +642,28 @@ function NewReturnForm({
         </div>
       </div>
       <form className="new-return-form" onSubmit={handleSubmit}>
-        <label>
+        <label htmlFor="customer-name">
           Müşteri adı
-          <input value={customerName} onChange={(event) => setCustomerName(event.target.value)} required />
+          <input
+            id="customer-name"
+            value={customerName}
+            onChange={(event) => setCustomerName(event.target.value)}
+            required
+          />
         </label>
-        <label>
+        <label htmlFor="product-name">
           Ürün
-          <input value={productName} onChange={(event) => setProductName(event.target.value)} required />
+          <input
+            id="product-name"
+            value={productName}
+            onChange={(event) => setProductName(event.target.value)}
+            required
+          />
         </label>
-        <label>
+        <label htmlFor="quantity">
           Adet
           <input
+            id="quantity"
             type="number"
             min={1}
             max={9999}
@@ -648,9 +672,14 @@ function NewReturnForm({
             required
           />
         </label>
-        <label className="form-wide">
+        <label htmlFor="return-notes" className="form-wide">
           Not <span className="optional">(opsiyonel)</span>
-          <textarea value={notes} onChange={(event) => setNotes(event.target.value)} rows={3} />
+          <textarea
+            id="return-notes"
+            value={notes}
+            onChange={(event) => setNotes(event.target.value)}
+            rows={3}
+          />
         </label>
         <div className="form-wide form-submit">
           <button className="button primary" disabled={submitting} type="submit">

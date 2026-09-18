@@ -41,9 +41,10 @@ export function LoginForm({ initialError = "" }: LoginFormProps) {
         <p className="muted">İade girişlerini, teslim durumunu ve kontrol sonucunu tek ekrandan yönetin.</p>
 
         <form onSubmit={handleSubmit} className="login-form">
-          <label>
+          <label htmlFor="login-username">
             Kullanıcı adı
             <input
+              id="login-username"
               autoComplete="username"
               autoFocus
               value={username}
@@ -54,9 +55,10 @@ export function LoginForm({ initialError = "" }: LoginFormProps) {
             />
           </label>
 
-          <label>
+          <label htmlFor="login-password">
             Şifre
             <input
+              id="login-password"
               autoComplete="current-password"
               type="password"
               value={password}
@@ -66,7 +68,7 @@ export function LoginForm({ initialError = "" }: LoginFormProps) {
             />
           </label>
 
-          {error && <div className="alert error">{error}</div>}
+          {error && <div className="alert error" role="alert">{error}</div>}
 
           <button className="button primary full" disabled={submitting} type="submit">
             {submitting ? "Giriş yapılıyor…" : "Giriş Yap"}
