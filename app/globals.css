@@ -659,6 +659,12 @@ p {
   background: transparent;
   font-size: 0.78rem;
   font-weight: 680;
+  outline-offset: -2px;
+}
+
+.segmented button:focus-visible {
+  outline: 2px solid var(--primary);
+  z-index: 1;
 }
 
 .segmented button:last-child {
