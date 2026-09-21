@@ -181,6 +181,44 @@ p {
   margin-top: 28px;
 }
 
+.form-group {
+  display: grid;
+  gap: 7px;
+}
+
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-field input {
+  padding-right: 42px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 6px;
+  transition: color 0.15s ease;
+}
+
+.password-toggle:hover {
+  color: var(--text);
+}
+
+.password-toggle:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 .button {
   min-height: 42px;
   display: inline-flex;
