@@ -330,13 +330,21 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
             placeholder="Müşteri veya ürün ara…"
             aria-label="Müşteri veya ürün ara"
           />
-          <select value={arrivalFilter} onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}>
+          <select
+            aria-label="Geliş durumuna göre filtrele"
+            value={arrivalFilter}
+            onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}
+          >
             <option value="tumu">Tüm geliş durumları</option>
             <option value="bekliyor">Bekleniyor</option>
             <option value="geldi">Geldi</option>
             <option value="gelmedi">Gelmedi</option>
           </select>
-          <select value={decisionFilter} onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}>
+          <select
+            aria-label="Kontrol sonucuna göre filtrele"
+            value={decisionFilter}
+            onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}
+          >
             <option value="bekliyor">Kontrol bekleyenler</option>
             <option value="onay">Onaylananlar</option>
             <option value="red">Reddedilenler</option>
@@ -363,8 +371,16 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         />
       )}
 
-      {message && <div className="alert success">{message}</div>}
-      {error && <div className="alert error">{error}</div>}
+      {message && (
+        <div className="alert success" role="status" aria-live="polite">
+          {message}
+        </div>
+      )}
+      {error && (
+        <div className="alert error" role="alert" aria-live="polite">
+          {error}
+        </div>
+      )}
 
       <section className="return-section">
         <div className="section-heading">
@@ -481,6 +497,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                     <div className="segmented">
                       {(["bekliyor", "geldi", "gelmedi"] as ArrivalStatus[]).map((status) => (
                         <button
+                          aria-pressed={item.arrival_status === status}
                           className={item.arrival_status === status ? "active" : ""}
                           key={status}
                           onClick={() => void updateArrival(item.id, status)}
@@ -521,6 +538,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                     <span className="action-label">3. Logo girişi</span>
                     <div className="segmented logo-segmented">
                       <button
+                        aria-pressed={!item.logo_entered}
                         className={!item.logo_entered ? "active" : ""}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, false)}
@@ -528,6 +546,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                         Yapılmadı
                       </button>
                       <button
+                        aria-pressed={item.logo_entered}
                         className={item.logo_entered ? "active" : ""}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, true)}

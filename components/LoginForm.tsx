@@ -66,7 +66,11 @@ export function LoginForm({ initialError = "" }: LoginFormProps) {
             />
           </label>
 
-          {error && <div className="alert error">{error}</div>}
+          {error && (
+            <div className="alert error" role="alert" aria-live="polite">
+              {error}
+            </div>
+          )}
 
           <button className="button primary full" disabled={submitting} type="submit">
             {submitting ? "Giriş yapılıyor…" : "Giriş Yap"}
