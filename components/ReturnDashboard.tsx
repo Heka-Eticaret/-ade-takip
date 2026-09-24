@@ -323,13 +323,25 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
 
       <section className="toolbar panel">
         <div className="filters">
-          <input
-            className="search-input"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Müşteri veya ürün ara…"
-            aria-label="Müşteri veya ürün ara"
-          />
+          <div className="search-wrapper">
+            <input
+              className="search-input"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Müşteri veya ürün ara…"
+              aria-label="Müşteri veya ürün ara"
+            />
+            {search && (
+              <button
+                type="button"
+                className="search-clear-button"
+                onClick={() => setSearch("")}
+                aria-label="Aramayı temizle"
+              >
+                ✕
+              </button>
+            )}
+          </div>
           <select value={arrivalFilter} onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}>
             <option value="tumu">Tüm geliş durumları</option>
             <option value="bekliyor">Bekleniyor</option>
@@ -484,6 +496,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                           className={item.arrival_status === status ? "active" : ""}
                           key={status}
                           onClick={() => void updateArrival(item.id, status)}
+                          aria-pressed={item.arrival_status === status}
                         >
                           {arrivalLabels[status]}
                         </button>
@@ -524,6 +537,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                         className={!item.logo_entered ? "active" : ""}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, false)}
+                        aria-pressed={!item.logo_entered}
                       >
                         Yapılmadı
                       </button>
@@ -531,6 +545,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                         className={item.logo_entered ? "active" : ""}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, true)}
+                        aria-pressed={item.logo_entered}
                       >
                         Yapıldı
                       </button>

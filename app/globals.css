@@ -369,8 +369,43 @@ p {
   gap: 10px;
 }
 
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
 .search-input {
   padding-left: 14px;
+  padding-right: 36px;
+}
+
+.search-clear-button {
+  position: absolute;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: var(--muted);
+  background: var(--neutral-bg);
+  font-size: 0.72rem;
+  line-height: 1;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.search-clear-button:hover {
+  color: var(--text);
+  background: #e4e7ec;
+}
+
+.search-clear-button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
 }
 
 .toolbar-actions {
