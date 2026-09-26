@@ -324,6 +324,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
       <section className="toolbar panel">
         <div className="filters">
           <input
+            type="search"
             className="search-input"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
@@ -386,6 +387,19 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
           <div className="empty-state">
             <strong>Kayıt bulunamadı.</strong>
             <span>Filtreleri temizleyin veya yeni bir iade ekleyin.</span>
+            {(search || arrivalFilter !== "tumu" || decisionFilter !== "bekliyor") && (
+              <button
+                className="button secondary small"
+                onClick={() => {
+                  setSearch("");
+                  setArrivalFilter("tumu");
+                  setDecisionFilter("bekliyor");
+                }}
+                style={{ marginTop: "10px" }}
+              >
+                Filtreleri Temizle
+              </button>
+            )}
           </div>
         ) : (
           <div className="return-list">
