@@ -345,7 +345,11 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         </div>
         <div className="toolbar-actions">
           <button className="button secondary" onClick={exportCsv}>CSV Aktar</button>
-          <button className="button primary" onClick={() => setShowForm((value) => !value)}>
+          <button
+            className="button primary"
+            onClick={() => setShowForm((value) => !value)}
+            aria-expanded={showForm}
+          >
             {showForm ? "Formu Kapat" : "+ Yeni İade"}
           </button>
         </div>
@@ -363,8 +367,16 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         />
       )}
 
-      {message && <div className="alert success">{message}</div>}
-      {error && <div className="alert error">{error}</div>}
+      {message && (
+        <div className="alert success" role="status" aria-live="polite">
+          {message}
+        </div>
+      )}
+      {error && (
+        <div className="alert error" role="alert" aria-live="assertive">
+          {error}
+        </div>
+      )}
 
       <section className="return-section">
         <div className="section-heading">
@@ -484,6 +496,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                           className={item.arrival_status === status ? "active" : ""}
                           key={status}
                           onClick={() => void updateArrival(item.id, status)}
+                          aria-pressed={item.arrival_status === status}
                         >
                           {arrivalLabels[status]}
                         </button>
@@ -498,6 +511,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                         className={`button approve ${item.decision_status === "onay" ? "selected" : ""}`}
                         disabled={item.arrival_status !== "geldi"}
                         onClick={() => void updateDecision(item.id, "onay")}
+                        aria-pressed={item.decision_status === "onay"}
                       >
                         Onayla
                       </button>
@@ -505,6 +519,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                         className={`button reject ${item.decision_status === "red" ? "selected" : ""}`}
                         disabled={item.arrival_status !== "geldi"}
                         onClick={() => void updateDecision(item.id, "red")}
+                        aria-pressed={item.decision_status === "red"}
                       >
                         Reddet
                       </button>
@@ -524,6 +539,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                         className={!item.logo_entered ? "active" : ""}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, false)}
+                        aria-pressed={!item.logo_entered}
                       >
                         Yapılmadı
                       </button>
@@ -531,6 +547,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                         className={item.logo_entered ? "active" : ""}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, true)}
+                        aria-pressed={item.logo_entered}
                       >
                         Yapıldı
                       </button>
@@ -539,7 +556,13 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                   </div>
 
                   <div className="card-footer-actions">
-                    <button className="text-button" onClick={() => void showHistory(item.id)}>İşlem geçmişi</button>
+                    <button
+                      className="text-button"
+                      onClick={() => void showHistory(item.id)}
+                      aria-expanded={historyId === item.id}
+                    >
+                      İşlem geçmişi
+                    </button>
                     {profile.role === "admin" && (
                       <button className="text-button danger" onClick={() => void deleteReturn(item.id)}>Kaydı sil</button>
                     )}
