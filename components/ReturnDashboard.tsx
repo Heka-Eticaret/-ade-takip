@@ -330,13 +330,21 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
             placeholder="Müşteri veya ürün ara…"
             aria-label="Müşteri veya ürün ara"
           />
-          <select value={arrivalFilter} onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}>
+          <select
+            value={arrivalFilter}
+            onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}
+            aria-label="Geliş durumuna göre filtrele"
+          >
             <option value="tumu">Tüm geliş durumları</option>
             <option value="bekliyor">Bekleniyor</option>
             <option value="geldi">Geldi</option>
             <option value="gelmedi">Gelmedi</option>
           </select>
-          <select value={decisionFilter} onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}>
+          <select
+            value={decisionFilter}
+            onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}
+            aria-label="Kontrol sonucuna göre filtrele"
+          >
             <option value="bekliyor">Kontrol bekleyenler</option>
             <option value="onay">Onaylananlar</option>
             <option value="red">Reddedilenler</option>
@@ -451,7 +459,12 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                     <div>
                       <strong>Not</strong>
                       {editingNoteId === item.id ? (
-                        <textarea value={noteDraft} onChange={(event) => setNoteDraft(event.target.value)} rows={3} />
+                        <textarea
+                          value={noteDraft}
+                          onChange={(event) => setNoteDraft(event.target.value)}
+                          rows={3}
+                          aria-label={`${item.customer_name} için iade notu`}
+                        />
                       ) : (
                         <p>{item.notes || "Not eklenmemiş."}</p>
                       )}
@@ -468,6 +481,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                           setEditingNoteId(item.id);
                           setNoteDraft(item.notes || "");
                         }}
+                        aria-label={`${item.customer_name} iade notunu düzenle`}
                       >
                         Notu düzenle
                       </button>
@@ -484,6 +498,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                           className={item.arrival_status === status ? "active" : ""}
                           key={status}
                           onClick={() => void updateArrival(item.id, status)}
+                          aria-pressed={item.arrival_status === status}
                         >
                           {arrivalLabels[status]}
                         </button>
@@ -524,6 +539,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                         className={!item.logo_entered ? "active" : ""}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, false)}
+                        aria-pressed={!item.logo_entered}
                       >
                         Yapılmadı
                       </button>
@@ -531,6 +547,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                         className={item.logo_entered ? "active" : ""}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, true)}
+                        aria-pressed={item.logo_entered}
                       >
                         Yapıldı
                       </button>
@@ -539,9 +556,21 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                   </div>
 
                   <div className="card-footer-actions">
-                    <button className="text-button" onClick={() => void showHistory(item.id)}>İşlem geçmişi</button>
+                    <button
+                      className="text-button"
+                      onClick={() => void showHistory(item.id)}
+                      aria-label={`${item.customer_name} işlem geçmişi`}
+                    >
+                      İşlem geçmişi
+                    </button>
                     {profile.role === "admin" && (
-                      <button className="text-button danger" onClick={() => void deleteReturn(item.id)}>Kaydı sil</button>
+                      <button
+                        className="text-button danger"
+                        onClick={() => void deleteReturn(item.id)}
+                        aria-label={`${item.customer_name} kaydını sil`}
+                      >
+                        Kaydı sil
+                      </button>
                     )}
                   </div>
                 </aside>
