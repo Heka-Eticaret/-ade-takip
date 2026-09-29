@@ -72,6 +72,16 @@ textarea {
   resize: vertical;
 }
 
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible,
+.segmented button:focus-visible,
+.text-button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 input:focus,
 select:focus,
 textarea:focus {
