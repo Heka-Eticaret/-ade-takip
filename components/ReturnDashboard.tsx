@@ -330,13 +330,21 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
             placeholder="Müşteri veya ürün ara…"
             aria-label="Müşteri veya ürün ara"
           />
-          <select value={arrivalFilter} onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}>
+          <select
+            value={arrivalFilter}
+            onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}
+            aria-label="Geliş durumuna göre filtrele"
+          >
             <option value="tumu">Tüm geliş durumları</option>
             <option value="bekliyor">Bekleniyor</option>
             <option value="geldi">Geldi</option>
             <option value="gelmedi">Gelmedi</option>
           </select>
-          <select value={decisionFilter} onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}>
+          <select
+            value={decisionFilter}
+            onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}
+            aria-label="Kontrol sonucuna göre filtrele"
+          >
             <option value="bekliyor">Kontrol bekleyenler</option>
             <option value="onay">Onaylananlar</option>
             <option value="red">Reddedilenler</option>
@@ -451,7 +459,13 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                     <div>
                       <strong>Not</strong>
                       {editingNoteId === item.id ? (
-                        <textarea value={noteDraft} onChange={(event) => setNoteDraft(event.target.value)} rows={3} />
+                        <textarea
+                          value={noteDraft}
+                          onChange={(event) => setNoteDraft(event.target.value)}
+                          rows={3}
+                          aria-label="İade notu"
+                          placeholder="İade ile ilgili not giriniz…"
+                        />
                       ) : (
                         <p>{item.notes || "Not eklenmemiş."}</p>
                       )}
@@ -478,11 +492,13 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                 <aside className="return-actions">
                   <div className="action-group">
                     <span className="action-label">1. Kargo durumu</span>
-                    <div className="segmented">
+                    <div className="segmented" role="group" aria-label="Kargo geliş durumu">
                       {(["bekliyor", "geldi", "gelmedi"] as ArrivalStatus[]).map((status) => (
                         <button
+                          type="button"
                           className={item.arrival_status === status ? "active" : ""}
                           key={status}
+                          aria-pressed={item.arrival_status === status}
                           onClick={() => void updateArrival(item.id, status)}
                         >
                           {arrivalLabels[status]}
@@ -519,16 +535,20 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
 
                   <div className="action-group">
                     <span className="action-label">3. Logo girişi</span>
-                    <div className="segmented logo-segmented">
+                    <div className="segmented logo-segmented" role="group" aria-label="Logo kaydı durumu">
                       <button
+                        type="button"
                         className={!item.logo_entered ? "active" : ""}
+                        aria-pressed={!item.logo_entered}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, false)}
                       >
                         Yapılmadı
                       </button>
                       <button
+                        type="button"
                         className={item.logo_entered ? "active" : ""}
+                        aria-pressed={item.logo_entered}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, true)}
                       >
