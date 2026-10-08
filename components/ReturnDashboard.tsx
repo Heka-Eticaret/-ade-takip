@@ -345,7 +345,12 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         </div>
         <div className="toolbar-actions">
           <button className="button secondary" onClick={exportCsv}>CSV Aktar</button>
-          <button className="button primary" onClick={() => setShowForm((value) => !value)}>
+          <button
+            className="button primary"
+            aria-expanded={showForm}
+            aria-controls="new-return-panel"
+            onClick={() => setShowForm((value) => !value)}
+          >
             {showForm ? "Formu Kapat" : "+ Yeni İade"}
           </button>
         </div>
@@ -483,6 +488,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                         <button
                           className={item.arrival_status === status ? "active" : ""}
                           key={status}
+                          aria-pressed={item.arrival_status === status}
                           onClick={() => void updateArrival(item.id, status)}
                         >
                           {arrivalLabels[status]}
@@ -496,6 +502,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                     <div className="decision-buttons">
                       <button
                         className={`button approve ${item.decision_status === "onay" ? "selected" : ""}`}
+                        aria-pressed={item.decision_status === "onay"}
                         disabled={item.arrival_status !== "geldi"}
                         onClick={() => void updateDecision(item.id, "onay")}
                       >
@@ -503,6 +510,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                       </button>
                       <button
                         className={`button reject ${item.decision_status === "red" ? "selected" : ""}`}
+                        aria-pressed={item.decision_status === "red"}
                         disabled={item.arrival_status !== "geldi"}
                         onClick={() => void updateDecision(item.id, "red")}
                       >
@@ -522,6 +530,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                     <div className="segmented logo-segmented">
                       <button
                         className={!item.logo_entered ? "active" : ""}
+                        aria-pressed={!item.logo_entered}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, false)}
                       >
@@ -529,6 +538,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                       </button>
                       <button
                         className={item.logo_entered ? "active" : ""}
+                        aria-pressed={item.logo_entered}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, true)}
                       >
@@ -539,7 +549,13 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                   </div>
 
                   <div className="card-footer-actions">
-                    <button className="text-button" onClick={() => void showHistory(item.id)}>İşlem geçmişi</button>
+                    <button
+                      className="text-button"
+                      aria-expanded={historyId === item.id}
+                      onClick={() => void showHistory(item.id)}
+                    >
+                      İşlem geçmişi
+                    </button>
                     {profile.role === "admin" && (
                       <button className="text-button danger" onClick={() => void deleteReturn(item.id)}>Kaydı sil</button>
                     )}
@@ -621,7 +637,7 @@ function NewReturnForm({
   }
 
   return (
-    <section className="panel new-return-panel">
+    <section id="new-return-panel" className="panel new-return-panel">
       <div className="section-heading">
         <div>
           <h2>Yeni İade Girişi</h2>
@@ -631,7 +647,12 @@ function NewReturnForm({
       <form className="new-return-form" onSubmit={handleSubmit}>
         <label>
           Müşteri adı
-          <input value={customerName} onChange={(event) => setCustomerName(event.target.value)} required />
+          <input
+            autoFocus
+            value={customerName}
+            onChange={(event) => setCustomerName(event.target.value)}
+            required
+          />
         </label>
         <label>
           Ürün
