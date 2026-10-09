@@ -323,20 +323,40 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
 
       <section className="toolbar panel">
         <div className="filters">
-          <input
-            className="search-input"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Müşteri veya ürün ara…"
-            aria-label="Müşteri veya ürün ara"
-          />
-          <select value={arrivalFilter} onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}>
+          <div className="search-wrapper">
+            <input
+              className="search-input"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Müşteri veya ürün ara…"
+              aria-label="Müşteri veya ürün ara"
+            />
+            {search && (
+              <button
+                type="button"
+                className="clear-search-button"
+                onClick={() => setSearch("")}
+                aria-label="Aramayı temizle"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+          <select
+            aria-label="Geliş durumu filtresi"
+            value={arrivalFilter}
+            onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}
+          >
             <option value="tumu">Tüm geliş durumları</option>
             <option value="bekliyor">Bekleniyor</option>
             <option value="geldi">Geldi</option>
             <option value="gelmedi">Gelmedi</option>
           </select>
-          <select value={decisionFilter} onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}>
+          <select
+            aria-label="Kontrol sonucu filtresi"
+            value={decisionFilter}
+            onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}
+          >
             <option value="bekliyor">Kontrol bekleyenler</option>
             <option value="onay">Onaylananlar</option>
             <option value="red">Reddedilenler</option>
