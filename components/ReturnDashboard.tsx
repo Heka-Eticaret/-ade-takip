@@ -323,13 +323,26 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
 
       <section className="toolbar panel">
         <div className="filters">
-          <input
-            className="search-input"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Müşteri veya ürün ara…"
-            aria-label="Müşteri veya ürün ara"
-          />
+          <div className="search-wrapper">
+            <input
+              className="search-input"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Müşteri veya ürün ara…"
+              aria-label="Müşteri veya ürün ara"
+            />
+            {search && (
+              <button
+                type="button"
+                className="search-clear-button"
+                onClick={() => setSearch("")}
+                aria-label="Aramayı temizle"
+                title="Aramayı temizle"
+              >
+                ✕
+              </button>
+            )}
+          </div>
           <select value={arrivalFilter} onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}>
             <option value="tumu">Tüm geliş durumları</option>
             <option value="bekliyor">Bekleniyor</option>
