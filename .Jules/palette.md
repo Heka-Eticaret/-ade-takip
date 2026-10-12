@@ -1,0 +1,1 @@
+# Palette UX & Accessibility Journal
