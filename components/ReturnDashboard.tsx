@@ -330,13 +330,21 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
             placeholder="Müşteri veya ürün ara…"
             aria-label="Müşteri veya ürün ara"
           />
-          <select value={arrivalFilter} onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}>
+          <select
+            value={arrivalFilter}
+            onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}
+            aria-label="Geliş durumu filtresi"
+          >
             <option value="tumu">Tüm geliş durumları</option>
             <option value="bekliyor">Bekleniyor</option>
             <option value="geldi">Geldi</option>
             <option value="gelmedi">Gelmedi</option>
           </select>
-          <select value={decisionFilter} onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}>
+          <select
+            value={decisionFilter}
+            onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}
+            aria-label="Kontrol sonucu filtresi"
+          >
             <option value="bekliyor">Kontrol bekleyenler</option>
             <option value="onay">Onaylananlar</option>
             <option value="red">Reddedilenler</option>
@@ -482,6 +490,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                       {(["bekliyor", "geldi", "gelmedi"] as ArrivalStatus[]).map((status) => (
                         <button
                           className={item.arrival_status === status ? "active" : ""}
+                          aria-pressed={item.arrival_status === status}
                           key={status}
                           onClick={() => void updateArrival(item.id, status)}
                         >
@@ -522,6 +531,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                     <div className="segmented logo-segmented">
                       <button
                         className={!item.logo_entered ? "active" : ""}
+                        aria-pressed={!item.logo_entered}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, false)}
                       >
@@ -529,6 +539,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                       </button>
                       <button
                         className={item.logo_entered ? "active" : ""}
+                        aria-pressed={item.logo_entered}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, true)}
                       >
@@ -539,7 +550,13 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                   </div>
 
                   <div className="card-footer-actions">
-                    <button className="text-button" onClick={() => void showHistory(item.id)}>İşlem geçmişi</button>
+                    <button
+                      className="text-button"
+                      aria-expanded={historyId === item.id}
+                      onClick={() => void showHistory(item.id)}
+                    >
+                      İşlem geçmişi
+                    </button>
                     {profile.role === "admin" && (
                       <button className="text-button danger" onClick={() => void deleteReturn(item.id)}>Kaydı sil</button>
                     )}
