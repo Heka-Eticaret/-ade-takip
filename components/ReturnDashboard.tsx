@@ -306,7 +306,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
             <strong>{profile.full_name}</strong>
             <span>{profile.role === "admin" ? "Yönetici" : "Operasyon"}</span>
           </div>
-          <button className="button ghost" onClick={() => void supabase.auth.signOut()}>
+          <button type="button" className="button ghost" onClick={() => void supabase.auth.signOut()} aria-label="Oturumu kapat">
             Çıkış
           </button>
         </div>
@@ -330,13 +330,21 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
             placeholder="Müşteri veya ürün ara…"
             aria-label="Müşteri veya ürün ara"
           />
-          <select value={arrivalFilter} onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}>
+          <select
+            value={arrivalFilter}
+            onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}
+            aria-label="Geliş durumuna göre filtrele"
+          >
             <option value="tumu">Tüm geliş durumları</option>
             <option value="bekliyor">Bekleniyor</option>
             <option value="geldi">Geldi</option>
             <option value="gelmedi">Gelmedi</option>
           </select>
-          <select value={decisionFilter} onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}>
+          <select
+            value={decisionFilter}
+            onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}
+            aria-label="Kontrol sonucuna göre filtrele"
+          >
             <option value="bekliyor">Kontrol bekleyenler</option>
             <option value="onay">Onaylananlar</option>
             <option value="red">Reddedilenler</option>
@@ -344,8 +352,8 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
           </select>
         </div>
         <div className="toolbar-actions">
-          <button className="button secondary" onClick={exportCsv}>CSV Aktar</button>
-          <button className="button primary" onClick={() => setShowForm((value) => !value)}>
+          <button type="button" className="button secondary" onClick={exportCsv}>CSV Aktar</button>
+          <button type="button" className="button primary" onClick={() => setShowForm((value) => !value)}>
             {showForm ? "Formu Kapat" : "+ Yeni İade"}
           </button>
         </div>
@@ -451,18 +459,24 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                     <div>
                       <strong>Not</strong>
                       {editingNoteId === item.id ? (
-                        <textarea value={noteDraft} onChange={(event) => setNoteDraft(event.target.value)} rows={3} />
+                        <textarea
+                          value={noteDraft}
+                          onChange={(event) => setNoteDraft(event.target.value)}
+                          rows={3}
+                          aria-label="İade notu"
+                        />
                       ) : (
                         <p>{item.notes || "Not eklenmemiş."}</p>
                       )}
                     </div>
                     {editingNoteId === item.id ? (
                       <div className="inline-actions">
-                        <button className="button small primary" onClick={() => void saveNote(item.id)}>Kaydet</button>
-                        <button className="button small ghost" onClick={() => setEditingNoteId(null)}>Vazgeç</button>
+                        <button type="button" className="button small primary" onClick={() => void saveNote(item.id)}>Kaydet</button>
+                        <button type="button" className="button small ghost" onClick={() => setEditingNoteId(null)}>Vazgeç</button>
                       </div>
                     ) : (
                       <button
+                        type="button"
                         className="text-button"
                         onClick={() => {
                           setEditingNoteId(item.id);
@@ -478,11 +492,13 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                 <aside className="return-actions">
                   <div className="action-group">
                     <span className="action-label">1. Kargo durumu</span>
-                    <div className="segmented">
+                    <div className="segmented" role="group" aria-label="Kargo durumu seçimi">
                       {(["bekliyor", "geldi", "gelmedi"] as ArrivalStatus[]).map((status) => (
                         <button
+                          type="button"
                           className={item.arrival_status === status ? "active" : ""}
                           key={status}
+                          aria-pressed={item.arrival_status === status}
                           onClick={() => void updateArrival(item.id, status)}
                         >
                           {arrivalLabels[status]}
@@ -495,21 +511,25 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                     <span className="action-label">2. Kontrol sonucu</span>
                     <div className="decision-buttons">
                       <button
+                        type="button"
                         className={`button approve ${item.decision_status === "onay" ? "selected" : ""}`}
                         disabled={item.arrival_status !== "geldi"}
+                        aria-pressed={item.decision_status === "onay"}
                         onClick={() => void updateDecision(item.id, "onay")}
                       >
                         Onayla
                       </button>
                       <button
+                        type="button"
                         className={`button reject ${item.decision_status === "red" ? "selected" : ""}`}
                         disabled={item.arrival_status !== "geldi"}
+                        aria-pressed={item.decision_status === "red"}
                         onClick={() => void updateDecision(item.id, "red")}
                       >
                         Reddet
                       </button>
                       {item.decision_status !== "bekliyor" && (
-                        <button className="button ghost small" onClick={() => void updateDecision(item.id, "bekliyor")}>
+                        <button type="button" className="button ghost small" onClick={() => void updateDecision(item.id, "bekliyor")}>
                           Kararı sıfırla
                         </button>
                       )}
@@ -519,17 +539,21 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
 
                   <div className="action-group">
                     <span className="action-label">3. Logo girişi</span>
-                    <div className="segmented logo-segmented">
+                    <div className="segmented logo-segmented" role="group" aria-label="Logo girişi seçimi">
                       <button
+                        type="button"
                         className={!item.logo_entered ? "active" : ""}
                         disabled={item.decision_status !== "onay"}
+                        aria-pressed={!item.logo_entered}
                         onClick={() => void updateLogoEntered(item.id, false)}
                       >
                         Yapılmadı
                       </button>
                       <button
+                        type="button"
                         className={item.logo_entered ? "active" : ""}
                         disabled={item.decision_status !== "onay"}
+                        aria-pressed={item.logo_entered}
                         onClick={() => void updateLogoEntered(item.id, true)}
                       >
                         Yapıldı
@@ -539,9 +563,23 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                   </div>
 
                   <div className="card-footer-actions">
-                    <button className="text-button" onClick={() => void showHistory(item.id)}>İşlem geçmişi</button>
+                    <button
+                      type="button"
+                      className="text-button"
+                      aria-expanded={historyId === item.id}
+                      onClick={() => void showHistory(item.id)}
+                    >
+                      İşlem geçmişi
+                    </button>
                     {profile.role === "admin" && (
-                      <button className="text-button danger" onClick={() => void deleteReturn(item.id)}>Kaydı sil</button>
+                      <button
+                        type="button"
+                        className="text-button danger"
+                        aria-label={`Kaydı sil: ${item.customer_name} - ${item.product_name}`}
+                        onClick={() => void deleteReturn(item.id)}
+                      >
+                        Kaydı sil
+                      </button>
                     )}
                   </div>
                 </aside>
