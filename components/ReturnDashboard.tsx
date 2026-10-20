@@ -330,13 +330,21 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
             placeholder="Müşteri veya ürün ara…"
             aria-label="Müşteri veya ürün ara"
           />
-          <select value={arrivalFilter} onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}>
+          <select
+            value={arrivalFilter}
+            onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}
+            aria-label="Geliş durumu filtresi"
+          >
             <option value="tumu">Tüm geliş durumları</option>
             <option value="bekliyor">Bekleniyor</option>
             <option value="geldi">Geldi</option>
             <option value="gelmedi">Gelmedi</option>
           </select>
-          <select value={decisionFilter} onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}>
+          <select
+            value={decisionFilter}
+            onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}
+            aria-label="Kontrol sonucu filtresi"
+          >
             <option value="bekliyor">Kontrol bekleyenler</option>
             <option value="onay">Onaylananlar</option>
             <option value="red">Reddedilenler</option>
@@ -483,6 +491,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                         <button
                           className={item.arrival_status === status ? "active" : ""}
                           key={status}
+                          aria-pressed={item.arrival_status === status}
                           onClick={() => void updateArrival(item.id, status)}
                         >
                           {arrivalLabels[status]}
@@ -496,6 +505,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                     <div className="decision-buttons">
                       <button
                         className={`button approve ${item.decision_status === "onay" ? "selected" : ""}`}
+                        aria-pressed={item.decision_status === "onay"}
                         disabled={item.arrival_status !== "geldi"}
                         onClick={() => void updateDecision(item.id, "onay")}
                       >
@@ -503,6 +513,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                       </button>
                       <button
                         className={`button reject ${item.decision_status === "red" ? "selected" : ""}`}
+                        aria-pressed={item.decision_status === "red"}
                         disabled={item.arrival_status !== "geldi"}
                         onClick={() => void updateDecision(item.id, "red")}
                       >
@@ -522,6 +533,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                     <div className="segmented logo-segmented">
                       <button
                         className={!item.logo_entered ? "active" : ""}
+                        aria-pressed={!item.logo_entered}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, false)}
                       >
@@ -529,6 +541,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                       </button>
                       <button
                         className={item.logo_entered ? "active" : ""}
+                        aria-pressed={item.logo_entered}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, true)}
                       >
