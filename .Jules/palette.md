@@ -1,0 +1,3 @@
+## 2025-05-18 - Return Management Accessibility & Dynamic Feedback
+**Learning:** In dashboard interfaces with custom toggle controls (like status segments or decision buttons) and dynamic alert notifications, screen readers require explicit `aria-pressed`, `aria-expanded`, `aria-label`, and `role="status"` attributes to announce state changes and dynamic updates effectively.
+**Action:** Always add `aria-pressed` on custom button toggles, `aria-expanded` on toggle panels (like expand form or show history), `aria-label` on unlabelled selects/textareas, and `role="status" aria-live="polite"` on toast/alert notifications across dashboard components.
