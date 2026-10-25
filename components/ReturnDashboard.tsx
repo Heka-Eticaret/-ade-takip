@@ -330,13 +330,21 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
             placeholder="Müşteri veya ürün ara…"
             aria-label="Müşteri veya ürün ara"
           />
-          <select value={arrivalFilter} onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}>
+          <select
+            aria-label="Geliş durumuna göre filtrele"
+            value={arrivalFilter}
+            onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}
+          >
             <option value="tumu">Tüm geliş durumları</option>
             <option value="bekliyor">Bekleniyor</option>
             <option value="geldi">Geldi</option>
             <option value="gelmedi">Gelmedi</option>
           </select>
-          <select value={decisionFilter} onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}>
+          <select
+            aria-label="Kontrol sonucuna göre filtrele"
+            value={decisionFilter}
+            onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}
+          >
             <option value="bekliyor">Kontrol bekleyenler</option>
             <option value="onay">Onaylananlar</option>
             <option value="red">Reddedilenler</option>
@@ -451,7 +459,13 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                     <div>
                       <strong>Not</strong>
                       {editingNoteId === item.id ? (
-                        <textarea value={noteDraft} onChange={(event) => setNoteDraft(event.target.value)} rows={3} />
+                        <textarea
+                          autoFocus
+                          aria-label="İade notu"
+                          value={noteDraft}
+                          onChange={(event) => setNoteDraft(event.target.value)}
+                          rows={3}
+                        />
                       ) : (
                         <p>{item.notes || "Not eklenmemiş."}</p>
                       )}
