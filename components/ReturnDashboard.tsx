@@ -306,7 +306,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
             <strong>{profile.full_name}</strong>
             <span>{profile.role === "admin" ? "Yönetici" : "Operasyon"}</span>
           </div>
-          <button className="button ghost" onClick={() => void supabase.auth.signOut()}>
+          <button className="button ghost" type="button" onClick={() => void supabase.auth.signOut()}>
             Çıkış
           </button>
         </div>
@@ -344,8 +344,14 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
           </select>
         </div>
         <div className="toolbar-actions">
-          <button className="button secondary" onClick={exportCsv}>CSV Aktar</button>
-          <button className="button primary" onClick={() => setShowForm((value) => !value)}>
+          <button className="button secondary" type="button" onClick={exportCsv}>CSV Aktar</button>
+          <button
+            className="button primary"
+            type="button"
+            aria-expanded={showForm}
+            aria-controls="new-return-panel"
+            onClick={() => setShowForm((value) => !value)}
+          >
             {showForm ? "Formu Kapat" : "+ Yeni İade"}
           </button>
         </div>
@@ -363,8 +369,8 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         />
       )}
 
-      {message && <div className="alert success">{message}</div>}
-      {error && <div className="alert error">{error}</div>}
+      {message && <div className="alert success" role="status">{message}</div>}
+      {error && <div className="alert error" role="alert">{error}</div>}
 
       <section className="return-section">
         <div className="section-heading">
@@ -451,19 +457,29 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                     <div>
                       <strong>Not</strong>
                       {editingNoteId === item.id ? (
-                        <textarea value={noteDraft} onChange={(event) => setNoteDraft(event.target.value)} rows={3} />
+                        <textarea
+                          aria-label="İade notu"
+                          value={noteDraft}
+                          onChange={(event) => setNoteDraft(event.target.value)}
+                          rows={3}
+                        />
                       ) : (
                         <p>{item.notes || "Not eklenmemiş."}</p>
                       )}
                     </div>
                     {editingNoteId === item.id ? (
                       <div className="inline-actions">
-                        <button className="button small primary" onClick={() => void saveNote(item.id)}>Kaydet</button>
-                        <button className="button small ghost" onClick={() => setEditingNoteId(null)}>Vazgeç</button>
+                        <button className="button small primary" type="button" onClick={() => void saveNote(item.id)}>
+                          Kaydet
+                        </button>
+                        <button className="button small ghost" type="button" onClick={() => setEditingNoteId(null)}>
+                          Vazgeç
+                        </button>
                       </div>
                     ) : (
                       <button
                         className="text-button"
+                        type="button"
                         onClick={() => {
                           setEditingNoteId(item.id);
                           setNoteDraft(item.notes || "");
@@ -481,7 +497,9 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                     <div className="segmented">
                       {(["bekliyor", "geldi", "gelmedi"] as ArrivalStatus[]).map((status) => (
                         <button
+                          type="button"
                           className={item.arrival_status === status ? "active" : ""}
+                          aria-pressed={item.arrival_status === status}
                           key={status}
                           onClick={() => void updateArrival(item.id, status)}
                         >
@@ -495,21 +513,29 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                     <span className="action-label">2. Kontrol sonucu</span>
                     <div className="decision-buttons">
                       <button
+                        type="button"
                         className={`button approve ${item.decision_status === "onay" ? "selected" : ""}`}
+                        aria-pressed={item.decision_status === "onay"}
                         disabled={item.arrival_status !== "geldi"}
                         onClick={() => void updateDecision(item.id, "onay")}
                       >
                         Onayla
                       </button>
                       <button
+                        type="button"
                         className={`button reject ${item.decision_status === "red" ? "selected" : ""}`}
+                        aria-pressed={item.decision_status === "red"}
                         disabled={item.arrival_status !== "geldi"}
                         onClick={() => void updateDecision(item.id, "red")}
                       >
                         Reddet
                       </button>
                       {item.decision_status !== "bekliyor" && (
-                        <button className="button ghost small" onClick={() => void updateDecision(item.id, "bekliyor")}>
+                        <button
+                          className="button ghost small"
+                          type="button"
+                          onClick={() => void updateDecision(item.id, "bekliyor")}
+                        >
                           Kararı sıfırla
                         </button>
                       )}
@@ -521,14 +547,18 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                     <span className="action-label">3. Logo girişi</span>
                     <div className="segmented logo-segmented">
                       <button
+                        type="button"
                         className={!item.logo_entered ? "active" : ""}
+                        aria-pressed={!item.logo_entered}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, false)}
                       >
                         Yapılmadı
                       </button>
                       <button
+                        type="button"
                         className={item.logo_entered ? "active" : ""}
+                        aria-pressed={item.logo_entered}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, true)}
                       >
@@ -539,15 +569,25 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                   </div>
 
                   <div className="card-footer-actions">
-                    <button className="text-button" onClick={() => void showHistory(item.id)}>İşlem geçmişi</button>
+                    <button
+                      className="text-button"
+                      type="button"
+                      aria-expanded={historyId === item.id}
+                      aria-controls={`history-panel-${item.id}`}
+                      onClick={() => void showHistory(item.id)}
+                    >
+                      İşlem geçmişi
+                    </button>
                     {profile.role === "admin" && (
-                      <button className="text-button danger" onClick={() => void deleteReturn(item.id)}>Kaydı sil</button>
+                      <button className="text-button danger" type="button" onClick={() => void deleteReturn(item.id)}>
+                        Kaydı sil
+                      </button>
                     )}
                   </div>
                 </aside>
 
                 {historyId === item.id && (
-                  <div className="history-panel">
+                  <div className="history-panel" id={`history-panel-${item.id}`}>
                     <strong>İşlem Geçmişi</strong>
                     {historyLoading ? (
                       <p>Yükleniyor…</p>
@@ -621,7 +661,7 @@ function NewReturnForm({
   }
 
   return (
-    <section className="panel new-return-panel">
+    <section id="new-return-panel" className="panel new-return-panel">
       <div className="section-heading">
         <div>
           <h2>Yeni İade Girişi</h2>
