@@ -748,6 +748,10 @@ p {
   color: #344054;
 }
 
+.empty-state .button {
+  margin-top: 6px;
+}
+
 @media (max-width: 1100px) {
   .stats-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));

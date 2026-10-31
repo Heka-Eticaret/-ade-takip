@@ -324,6 +324,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
       <section className="toolbar panel">
         <div className="filters">
           <input
+            type="search"
             className="search-input"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
@@ -381,11 +382,38 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         </div>
 
         {loading ? (
-          <div className="empty-state">Kayıtlar yükleniyor…</div>
+          <div className="empty-state" role="status" aria-live="polite">Kayıtlar yükleniyor…</div>
         ) : filteredReturns.length === 0 ? (
-          <div className="empty-state">
-            <strong>Kayıt bulunamadı.</strong>
-            <span>Filtreleri temizleyin veya yeni bir iade ekleyin.</span>
+          <div className="empty-state" role="status" aria-live="polite">
+            {returns.length === 0 ? (
+              <>
+                <strong>Henüz iade kaydı bulunmuyor.</strong>
+                <span>Yeni bir iade kaydı oluşturarak takibe başlayabilirsiniz.</span>
+                <button
+                  type="button"
+                  className="button primary small"
+                  onClick={() => setShowForm(true)}
+                >
+                  + Yeni İade Oluştur
+                </button>
+              </>
+            ) : (
+              <>
+                <strong>Arama veya filtre kriterlerinize uygun kayıt bulunamadı.</strong>
+                <span>Filtreleri temizleyerek tüm iadeleri görüntüleyebilirsiniz.</span>
+                <button
+                  type="button"
+                  className="button secondary small"
+                  onClick={() => {
+                    setSearch("");
+                    setArrivalFilter("tumu");
+                    setDecisionFilter("tumu");
+                  }}
+                >
+                  Filtreleri Temizle
+                </button>
+              </>
+            )}
           </div>
         ) : (
           <div className="return-list">
@@ -631,7 +659,12 @@ function NewReturnForm({
       <form className="new-return-form" onSubmit={handleSubmit}>
         <label>
           Müşteri adı
-          <input value={customerName} onChange={(event) => setCustomerName(event.target.value)} required />
+          <input
+            autoFocus
+            value={customerName}
+            onChange={(event) => setCustomerName(event.target.value)}
+            required
+          />
         </label>
         <label>
           Ürün
