@@ -53,6 +53,12 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
   const [history, setHistory] = useState<ReturnLog[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
 
+  const clearFilters = useCallback(() => {
+    setSearch("");
+    setArrivalFilter("tumu");
+    setDecisionFilter("tumu");
+  }, []);
+
   const loadReturns = useCallback(async () => {
     const { data, error: loadError } = await supabase
       .from("returns")
@@ -330,13 +336,21 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
             placeholder="Müşteri veya ürün ara…"
             aria-label="Müşteri veya ürün ara"
           />
-          <select value={arrivalFilter} onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}>
+          <select
+            value={arrivalFilter}
+            onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}
+            aria-label="Kargo geliş durumu filtrele"
+          >
             <option value="tumu">Tüm geliş durumları</option>
             <option value="bekliyor">Bekleniyor</option>
             <option value="geldi">Geldi</option>
             <option value="gelmedi">Gelmedi</option>
           </select>
-          <select value={decisionFilter} onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}>
+          <select
+            value={decisionFilter}
+            onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}
+            aria-label="Kontrol sonucu filtrele"
+          >
             <option value="bekliyor">Kontrol bekleyenler</option>
             <option value="onay">Onaylananlar</option>
             <option value="red">Reddedilenler</option>
@@ -345,7 +359,11 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         </div>
         <div className="toolbar-actions">
           <button className="button secondary" onClick={exportCsv}>CSV Aktar</button>
-          <button className="button primary" onClick={() => setShowForm((value) => !value)}>
+          <button
+            className="button primary"
+            onClick={() => setShowForm((value) => !value)}
+            aria-expanded={showForm}
+          >
             {showForm ? "Formu Kapat" : "+ Yeni İade"}
           </button>
         </div>
@@ -381,11 +399,25 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         </div>
 
         {loading ? (
-          <div className="empty-state">Kayıtlar yükleniyor…</div>
+          <div className="empty-state" role="status" aria-live="polite">Kayıtlar yükleniyor…</div>
         ) : filteredReturns.length === 0 ? (
-          <div className="empty-state">
+          <div className="empty-state" role="status" aria-live="polite">
             <strong>Kayıt bulunamadı.</strong>
-            <span>Filtreleri temizleyin veya yeni bir iade ekleyin.</span>
+            {returns.length > 0 ? (
+              <>
+                <span>Seçilen filtrelere uygun iade kaydı bulunamadı.</span>
+                <button className="button secondary small" onClick={clearFilters}>
+                  Filtreleri Temizle
+                </button>
+              </>
+            ) : (
+              <>
+                <span>Henüz sisteme eklenmiş bir iade bulunmuyor.</span>
+                <button className="button primary small" onClick={() => setShowForm(true)}>
+                  + Yeni İade Ekle
+                </button>
+              </>
+            )}
           </div>
         ) : (
           <div className="return-list">
