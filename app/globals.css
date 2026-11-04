@@ -49,6 +49,11 @@ button:disabled {
   opacity: 0.52;
 }
 
+button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.35);
+}
+
 input,
 select,
 textarea {
