@@ -381,11 +381,35 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         </div>
 
         {loading ? (
-          <div className="empty-state">Kayıtlar yükleniyor…</div>
+          <div className="empty-state" role="status">Kayıtlar yükleniyor…</div>
         ) : filteredReturns.length === 0 ? (
-          <div className="empty-state">
+          <div className="empty-state" role="status">
             <strong>Kayıt bulunamadı.</strong>
-            <span>Filtreleri temizleyin veya yeni bir iade ekleyin.</span>
+            {returns.length === 0 ? (
+              <>
+                <span>Henüz kayıtlı bir iade bulunmuyor. Yeni bir iade kaydı oluşturarak başlayabilirsiniz.</span>
+                {!showForm && (
+                  <button className="button primary small" style={{ marginTop: 8 }} onClick={() => setShowForm(true)}>
+                    + Yeni İade Ekle
+                  </button>
+                )}
+              </>
+            ) : (
+              <>
+                <span>Arama veya filtre kriterlerinize uyan kayıt bulunamadı.</span>
+                <button
+                  className="button secondary small"
+                  style={{ marginTop: 8 }}
+                  onClick={() => {
+                    setSearch("");
+                    setArrivalFilter("tumu");
+                    setDecisionFilter("tumu");
+                  }}
+                >
+                  Filtreleri Temizle
+                </button>
+              </>
+            )}
           </div>
         ) : (
           <div className="return-list">
