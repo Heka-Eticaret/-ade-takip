@@ -363,8 +363,8 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         />
       )}
 
-      {message && <div className="alert success">{message}</div>}
-      {error && <div className="alert error">{error}</div>}
+      {message && <div className="alert success" role="status" aria-live="polite">{message}</div>}
+      {error && <div className="alert error" role="alert" aria-live="assertive">{error}</div>}
 
       <section className="return-section">
         <div className="section-heading">
@@ -477,12 +477,13 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
 
                 <aside className="return-actions">
                   <div className="action-group">
-                    <span className="action-label">1. Kargo durumu</span>
-                    <div className="segmented">
+                    <span className="action-label" id={`arrival-label-${item.id}`}>1. Kargo durumu</span>
+                    <div className="segmented" role="group" aria-labelledby={`arrival-label-${item.id}`}>
                       {(["bekliyor", "geldi", "gelmedi"] as ArrivalStatus[]).map((status) => (
                         <button
                           className={item.arrival_status === status ? "active" : ""}
                           key={status}
+                          aria-pressed={item.arrival_status === status}
                           onClick={() => void updateArrival(item.id, status)}
                         >
                           {arrivalLabels[status]}
@@ -492,10 +493,11 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                   </div>
 
                   <div className="action-group">
-                    <span className="action-label">2. Kontrol sonucu</span>
-                    <div className="decision-buttons">
+                    <span className="action-label" id={`decision-label-${item.id}`}>2. Kontrol sonucu</span>
+                    <div className="decision-buttons" role="group" aria-labelledby={`decision-label-${item.id}`}>
                       <button
                         className={`button approve ${item.decision_status === "onay" ? "selected" : ""}`}
+                        aria-pressed={item.decision_status === "onay"}
                         disabled={item.arrival_status !== "geldi"}
                         onClick={() => void updateDecision(item.id, "onay")}
                       >
@@ -503,6 +505,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                       </button>
                       <button
                         className={`button reject ${item.decision_status === "red" ? "selected" : ""}`}
+                        aria-pressed={item.decision_status === "red"}
                         disabled={item.arrival_status !== "geldi"}
                         onClick={() => void updateDecision(item.id, "red")}
                       >
@@ -518,10 +521,11 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                   </div>
 
                   <div className="action-group">
-                    <span className="action-label">3. Logo girişi</span>
-                    <div className="segmented logo-segmented">
+                    <span className="action-label" id={`logo-label-${item.id}`}>3. Logo girişi</span>
+                    <div className="segmented logo-segmented" role="group" aria-labelledby={`logo-label-${item.id}`}>
                       <button
                         className={!item.logo_entered ? "active" : ""}
+                        aria-pressed={!item.logo_entered}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, false)}
                       >
@@ -529,6 +533,7 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
                       </button>
                       <button
                         className={item.logo_entered ? "active" : ""}
+                        aria-pressed={item.logo_entered}
                         disabled={item.decision_status !== "onay"}
                         onClick={() => void updateLogoEntered(item.id, true)}
                       >
