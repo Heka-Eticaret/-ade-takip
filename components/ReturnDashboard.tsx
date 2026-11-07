@@ -330,13 +330,21 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
             placeholder="Müşteri veya ürün ara…"
             aria-label="Müşteri veya ürün ara"
           />
-          <select value={arrivalFilter} onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}>
+          <select
+            value={arrivalFilter}
+            onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}
+            aria-label="Geliş durumuna göre filtrele"
+          >
             <option value="tumu">Tüm geliş durumları</option>
             <option value="bekliyor">Bekleniyor</option>
             <option value="geldi">Geldi</option>
             <option value="gelmedi">Gelmedi</option>
           </select>
-          <select value={decisionFilter} onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}>
+          <select
+            value={decisionFilter}
+            onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}
+            aria-label="Kontrol sonucuna göre filtrele"
+          >
             <option value="bekliyor">Kontrol bekleyenler</option>
             <option value="onay">Onaylananlar</option>
             <option value="red">Reddedilenler</option>
@@ -381,11 +389,38 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         </div>
 
         {loading ? (
-          <div className="empty-state">Kayıtlar yükleniyor…</div>
+          <div className="empty-state" role="status">Kayıtlar yükleniyor…</div>
         ) : filteredReturns.length === 0 ? (
-          <div className="empty-state">
-            <strong>Kayıt bulunamadı.</strong>
-            <span>Filtreleri temizleyin veya yeni bir iade ekleyin.</span>
+          <div className="empty-state" role="status">
+            <strong>{returns.length === 0 ? "Henüz iade kaydı bulunmuyor." : "Arama kriterlerine uygun iade bulunamadı."}</strong>
+            <span>
+              {returns.length === 0
+                ? "Yeni bir iade kaydı oluşturarak operasyon takibine başlayabilirsiniz."
+                : "Arama veya durum filtrelerini temizleyerek diğer kayıtları görebilirsiniz."}
+            </span>
+            {returns.length === 0 ? (
+              <button
+                type="button"
+                className="button primary small"
+                style={{ marginTop: 10 }}
+                onClick={() => setShowForm(true)}
+              >
+                + Yeni İade Ekle
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="button secondary small"
+                style={{ marginTop: 10 }}
+                onClick={() => {
+                  setSearch("");
+                  setArrivalFilter("tumu");
+                  setDecisionFilter("tumu");
+                }}
+              >
+                Filtreleri Temizle
+              </button>
+            )}
           </div>
         ) : (
           <div className="return-list">
