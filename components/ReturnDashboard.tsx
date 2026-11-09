@@ -114,6 +114,14 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
     return () => window.clearTimeout(timer);
   }, [message]);
 
+  const resetFilters = useCallback(() => {
+    setSearch("");
+    setArrivalFilter("tumu");
+    setDecisionFilter("tumu");
+  }, []);
+
+  const hasActiveFilters = search.trim() !== "" || arrivalFilter !== "tumu" || decisionFilter !== "tumu";
+
   const filteredReturns = useMemo(() => {
     const normalized = search.trim().toLocaleLowerCase("tr-TR");
 
@@ -345,7 +353,11 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         </div>
         <div className="toolbar-actions">
           <button className="button secondary" onClick={exportCsv}>CSV Aktar</button>
-          <button className="button primary" onClick={() => setShowForm((value) => !value)}>
+          <button
+            className="button primary"
+            aria-expanded={showForm}
+            onClick={() => setShowForm((value) => !value)}
+          >
             {showForm ? "Formu Kapat" : "+ Yeni İade"}
           </button>
         </div>
@@ -381,11 +393,24 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         </div>
 
         {loading ? (
-          <div className="empty-state">Kayıtlar yükleniyor…</div>
+          <div className="empty-state" role="status">Kayıtlar yükleniyor…</div>
         ) : filteredReturns.length === 0 ? (
-          <div className="empty-state">
+          <div className="empty-state" role="status">
             <strong>Kayıt bulunamadı.</strong>
-            <span>Filtreleri temizleyin veya yeni bir iade ekleyin.</span>
+            <span>{hasActiveFilters ? "Arama kriterlerinize uygun iade kaydı bulunamadı." : "Henüz sisteme eklenmiş bir iade kaydı yok."}</span>
+            {hasActiveFilters ? (
+              <button className="button secondary small" type="button" onClick={resetFilters}>
+                Filtreleri Temizle
+              </button>
+            ) : (
+              <button
+                className="button primary small"
+                type="button"
+                onClick={() => setShowForm(true)}
+              >
+                + Yeni İade Ekle
+              </button>
+            )}
           </div>
         ) : (
           <div className="return-list">
