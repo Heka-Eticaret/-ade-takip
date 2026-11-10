@@ -140,6 +140,16 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
     [returns],
   );
 
+  function resetFilters() {
+    setSearch("");
+    setArrivalFilter("tumu");
+    setDecisionFilter("tumu");
+  }
+
+  const hasActiveFilters = Boolean(
+    search.trim() || arrivalFilter !== "tumu" || decisionFilter !== "tumu",
+  );
+
   async function updateArrival(id: string, status: ArrivalStatus) {
     setError("");
     const { error: updateError } = await supabase
@@ -324,19 +334,28 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
       <section className="toolbar panel">
         <div className="filters">
           <input
+            type="search"
             className="search-input"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Müşteri veya ürün ara…"
             aria-label="Müşteri veya ürün ara"
           />
-          <select value={arrivalFilter} onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}>
+          <select
+            value={arrivalFilter}
+            onChange={(event) => setArrivalFilter(event.target.value as ArrivalStatus | "tumu")}
+            aria-label="Geliş durumuna göre filtrele"
+          >
             <option value="tumu">Tüm geliş durumları</option>
             <option value="bekliyor">Bekleniyor</option>
             <option value="geldi">Geldi</option>
             <option value="gelmedi">Gelmedi</option>
           </select>
-          <select value={decisionFilter} onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}>
+          <select
+            value={decisionFilter}
+            onChange={(event) => setDecisionFilter(event.target.value as DecisionStatus | "tumu")}
+            aria-label="Kontrol sonucuna göre filtrele"
+          >
             <option value="bekliyor">Kontrol bekleyenler</option>
             <option value="onay">Onaylananlar</option>
             <option value="red">Reddedilenler</option>
@@ -381,11 +400,29 @@ export function ReturnDashboard({ profile }: ReturnDashboardProps) {
         </div>
 
         {loading ? (
-          <div className="empty-state">Kayıtlar yükleniyor…</div>
+          <div className="empty-state" role="status">Kayıtlar yükleniyor…</div>
         ) : filteredReturns.length === 0 ? (
-          <div className="empty-state">
+          <div className="empty-state" role="status">
             <strong>Kayıt bulunamadı.</strong>
-            <span>Filtreleri temizleyin veya yeni bir iade ekleyin.</span>
+            <span>
+              {hasActiveFilters
+                ? "Arama kriterlerine uygun iade kaydı bulunamadı."
+                : "Henüz sisteme girilmiş bir iade kaydı bulunmuyor."}
+            </span>
+            <div className="inline-actions" style={{ marginTop: "6px" }}>
+              {hasActiveFilters && (
+                <button type="button" className="button small secondary" onClick={resetFilters}>
+                  Filtreleri Temizle
+                </button>
+              )}
+              <button
+                type="button"
+                className="button small primary"
+                onClick={() => setShowForm(true)}
+              >
+                + Yeni İade Ekle
+              </button>
+            </div>
           </div>
         ) : (
           <div className="return-list">
